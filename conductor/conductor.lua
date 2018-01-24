@@ -1,20 +1,23 @@
 
 -- data to initialize
--- Line.crossings
--- Station.stops
--- Block.lines
---
+--   Block.stops
+--   Stop.blocks
 
 -- A combinator will be copied to create an entity for
---   line
---   station
+--   block
 --   stop
+--     used to send a signal to the train stop to send a train
 --
--- These will be used to define associations and uniquely identify.
--- I will need to figure out how to have in and out circuit network connections on an entity
---
+-- These will be used to define associations using circuit networks and uniquely identify.
 -- I will use the API to determine which entities are connected to determine which stops, stations, and blocks
--- are connected
+-- are connected.
+--
+-- Circuit networks:
+--   stop circuit network
+--     connects stop combinators and stop block combinators
+--   block circuit network
+--     connects stop block combinators, block combinators, and gates
+--
 
 
 Window = {
