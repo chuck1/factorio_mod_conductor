@@ -13,6 +13,8 @@
 -- These will be used to define associations and uniquely identify.
 -- I will need to figure out how to have in and out circuit network connections on an entity
 --
+-- I will use the API to determine which entities are connected to determine which stops, stations, and blocks
+-- are connected
 
 
 Window = {
@@ -63,20 +65,11 @@ Block = {
 	stations = {}
 }
 
-function Block:notify(station, t_1, t_2)
+function Block:notify(t_1, t_2)
 	-- notify all stops in all stations except 'station' that this block
 	-- will be occupied from t_1 to t_2
-	for line_id, line in pairs(self.lines) do
-		if line.station_A then
-			if line.station_A.entity.unit_number != station.entity.unit_number then
-				line.station_A.block_notify(self, t_1, t_2)
-			end
-		end
-		if line.station_B then
-			if line.station_B.entity.unit_number != station.entity.unit_number then
-				line.station_B.block_notify(self, t_1, t_2)
-			end
-		end
+	for station_id, station in pairs(self.stations) do
+		station.block_notify(self, t_1, t_2)
 	end
 end
 
@@ -142,15 +135,8 @@ function Stop:schedule(e, train)
 	-- notify the relevant blocks
 	for block_id, w in pairs(self.blocks) do
 		block = blocks[block_id]
-		block.notify(self.station, t + w.t_1, t + w.t_2)
+		block.notify(t + w.t_1, t + w.t_2)
 	end
-	
-	-- The above will exclude this station.
-	-- To prevent collisions between trains leaving the same station, we will use the merge block.
-	-- Only stops belonging to a given station will reference the station's merge block (stops
-	-- on the opposing station will reference the line_block)
-	w = self.blocks[self.station.merge_block]
-	self.station.merge_block.notify(nil, t + w.t_1, t + w.t_2)
 end
 
 function Stop:launch()
