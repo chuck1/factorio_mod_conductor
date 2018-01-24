@@ -18,7 +18,8 @@
 --   block circuit network
 --     connects stop block combinators, block combinators, and gates
 --
-
+-- IMPORTANT
+-- there can be multiple StopBlock object per stop-block entity
 
 Window = {
 	new = function(self, t_1, t_2)

@@ -4,7 +4,7 @@ Stop = {
 	entity = nil,
 
 	-- train stop entity
-	train_stop = nil,
+	train_stop_entity = nil,
 
 	-- table of blocks and how long it will take this train to enter and exit
 	stop_blocks = {},
@@ -15,8 +15,56 @@ Stop = {
 	-- time at which the train currently at this stop should be released
 	t = nil,
 
-	is_testing = false
+	is_testing = false,
+
+	last_reset = nil
 }
+
+function Stop:new()
+	o = {}
+	setmetatable(o, self)
+	self.__index = self
+	return o
+end
+
+function Stop:check_connection(e, entity)
+	if entity.name == "conductor-train-stop" then
+		if self.train_stop_entity == nil then
+			self.train_stop_entity = entity
+		else
+			-- error
+		end
+	elseif entity.name == "conductor-stop-block-combinator" then
+
+		stop_block = get_conductor_object(e, entity, self)
+		stop_block:reset_connections(e)
+
+		self.stop_blocks[entity.unit_number] = stock_block
+	end
+end
+
+function Stop:reset_connections(e)
+	-- a stop should be connected to a conductor-train-stop and one or more conductor-stop-block-combinator
+
+	print("stop reset connections", self, e)
+
+	if self.last_reset == e.tick then return end
+	self.last_reset = e.tick
+
+	self.train_stop_entity = nil
+	self.stop_blocks = {}
+	windows = {}
+	t = nil
+	is_testing = false
+
+	for i, entity in pairs(self.entity.circuit_connected_entities.red) do
+		self:check_connection(e, entity)
+	end
+
+	for i, entity in pairs(self.entity.circuit_connected_entities.green) do
+		self:check_connection(e, entity)
+	end
+end
 
 function Stop:block_notify(block, t_1, t_2)
 	sb = self.stop_blocks[block.entity.unit_number]
@@ -68,6 +116,7 @@ function Stop:unlock_blocks()
 end
 
 function Stop:start_test()
+	print("Stop start test")
 
 	self.is_testing = true
 
@@ -84,6 +133,8 @@ function Stop:stop_test()
 end
 
 function Stop:schedule(e)
+
+	print("Stop schedule")
 
 	table.sort(self.windows, function(a, b) return a.t_1 < b.t_1 end)
 
@@ -137,7 +188,7 @@ end
 
 function Stop:has_data()
 	for stop_block_id, stop_block in pairs(self.stop_blocks) do
-		if !stop_block.has_data() then
+		if not stop_block:has_data() then
 			return false
 		end
 	end
@@ -146,7 +197,7 @@ function Stop:has_data()
 end
 
 function Stop:ready()
-	return self()has_data and self.blocks_unlocked()
+	return self:has_data() and self:blocks_unlocked()
 end
 
 
