@@ -11,11 +11,19 @@ conductor = {
 
 function on_train_arrive(e)
 
-	stop = conductor.stops[e.train.station.unit_number]
+	local stop = conductor.stops[e.train.station.unit_number]
 	
-	print("on train arrive", e.train.station.unit_number, stop)
+	print("on train arrive", e.train.station.unit_number, stop.entity.unit_number)
 	
-
+	if stop == nil then 
+		print("stops")
+		for i, stop in pairs(conductor.stops) do
+			print(i, stop)
+		end
+		print()
+		error("stop is nil") 
+	end
+	
 	conductor.stops_waiting_to_schedule:push_right(stop)
 end
 
@@ -23,7 +31,7 @@ function on_train_leave(e)
 	-- train has just left a conductor train stop
 	-- reset the stop
 
-	stop = stops[e.train.station.unit_number]
+	local stop = conductor.stops[e.train.station.unit_number]
 
 	stop.stop()
 end
@@ -42,7 +50,7 @@ end
 
 function on_tick_testing(e)
 	for stop_id, stop in pairs(conductor.stops_testing) do
-		stop.check_gates(e)
+		stop:check_gates(e)
 	end
 end
 
@@ -89,7 +97,7 @@ function on_tick(e)
 end
 
 function is_conductor_entity(entity)
-	print("is conductor entity", entity.name)
+	--print("is conductor entity", entity.name)
 	--if entity.name == "conductor-train-stop" then return true end
 	if entity.name == "conductor-stop-combinator" then return true end
 	if entity.name == "conductor-stop-block-combinator" then return true end
@@ -99,22 +107,36 @@ end
 
 function get_conductor_object(e, entity, ref)
 
-	print("get conductor object", entity.unit_number, entity.name)
+	--print("get conductor object", entity.unit_number, entity.name)
 
 	if entity.name == nil then error("entity.name is nil") end
 
 	if entity.conductor_object ~= nil then 
 		if entity.name == "conductor-stop-block-combinator" then
+			
+			--print("ref", ref.entity.unit_number)
+			--print(entity.name, "has table of conductor objects")
+			--for i, o in pairs(entity.conductor_object) do
+			--	print(i, o)
+			--end
+			--print()
+
 			if entity.conductor_object[ref.entity.unit_number] == nil then
-				stop_block = StopBlock:new()
+
+				--print("ref not in table")
+
+				local stop_block = StopBlock:new()
 				stop_block.entity = entity
 
 				entity.conductor_object[ref.entity.unit_number] = stop_block
 				
-				stop_block:reset_connections(e)
+				--stop_block:reset_connections(e)
+				
+				if stop_block == nil then error("stop_block is nil") end
 
-				return entity.conductor_object[ref.entity.unit_number]
+				return stop_block
 			else
+				--print("ref is in table")
 				return entity.conductor_object[ref.entity.unit_number]
 			end
 		else
@@ -124,9 +146,9 @@ function get_conductor_object(e, entity, ref)
 
 	-- entity does not yet have conductor object
 	if entity.name == "conductor-stop-combinator" then
-		print("create new Stop", entity.unit_number)
+		--print("create new Stop", entity.unit_number)
 
-		stop = Stop:new()
+		local stop = Stop:new()
 		stop.entity = entity
 
 		entity.conductor_object = stop
@@ -139,21 +161,23 @@ function get_conductor_object(e, entity, ref)
 	end
 
 	if entity.name == "conductor-stop-block-combinator" then
-		print("create new StopBlock", entity.unit_number)
+		--print("create new StopBlock", entity.unit_number)
 
-		stop_block = StopBlock:new()
+		local stop_block = StopBlock:new()
 		stop_block.entity = entity
-		
+	
+		--print("ref", ref.entity.unit_number)
+	
 		entity.conductor_object = {}
 		entity.conductor_object[ref.entity.unit_number] = stop_block
 
-		stop_block:reset_connections(e)
+		--stop_block:reset_connections(e)
 
 		return stop_block
 	end
 
 	if entity.name == "conductor-block-combinator" then
-		print("create new Block", entity.unit_number)
+		--print("create new Block", entity.unit_number)
 
 		block = Block:new()
 		block.entity = entity
@@ -164,7 +188,7 @@ function get_conductor_object(e, entity, ref)
 
 		--conductor.stops[stop.train_stop_entity.unit_number] = stop
 
-		return stop
+		return block
 	end
 
 	--error("need conductor object for ", entity, entity.unit_number, entity.name)
@@ -185,9 +209,9 @@ function on_built_entity(e)
 		end
 
 		for i, entity in pairs(e.created_entity.circuit_connected_entities.green) do
-			print(entity.name)
+			--print(entity.name)
 			if is_conductor_entity(entity) then
-				print(entity.name)
+				--print(entity.name)
 				local o = get_conductor_object(e, entity, nil)
 				o:reset_connections(e)
 			end
@@ -197,21 +221,49 @@ function on_built_entity(e)
 end
 
 function print_connections()
+	print()
+	print("connections:")
+
 	for stop_id, stop in pairs(conductor.stops) do
-		print("stop", stop_id)
+		print("stop", stop.entity.unit_number, stop)
+		
+		for stop_block_id, stop_block in pairs(stop.stop_blocks) do
+			print("\tstop_block", stop_block_id, stop_block, "stop:", stop_block.stop.entity.unit_number)
+			print("\t\tt_1", stop_block.t_1)
+			print("\t\tt_2", stop_block.t_2)
+			
+			local block = stop_block.block
+			
+			print("\t\tblock", block.entity.unit_number)
+
+			print("\t\t\tgates")
+			for gate_id, gate in pairs(block.gates) do
+				print("\t\t\t\tgate", gate_id)
+			end
+
+			print("\t\t\tstop blocks")
+			for stop_block_id_1, stop_block_1 in pairs(block.stop_blocks) do
+				print("\t\t\t\tstop block", stop_block_id_1)
+			end
+			
+			
+		end
 	end
+
+	print()
 end
 
 function print_state()
+	print()
 	print("state:")
 
 	local l = conductor.stops_waiting_to_schedule
 
 	for i=l.first,l.last do
-		print(i, l[i])
-		print(i, l[i].entity)
-		print(i, l[i].entity.name)
+		print(i, l[i].entity.name, l[i].entity.unit_number)
 	end
+
+	print()
 end
 
 script.on_event({defines.events.on_built_entity}, on_built_entity)

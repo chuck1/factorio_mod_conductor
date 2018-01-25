@@ -6,8 +6,6 @@ Stop = {
 	-- train stop entity
 	train_stop_entity = nil,
 
-	-- table of blocks and how long it will take this train to enter and exit
-	stop_blocks = {},
 
 	-- list of time windows during which this stop should not release a train
 	windows = {},
@@ -21,13 +19,18 @@ Stop = {
 }
 
 function Stop:new()
-	o = {}
+	o = {
+		-- table of blocks and how long it will take this train to enter and exit
+		stop_blocks = {},
+	}
 	setmetatable(o, self)
 	self.__index = self
 	return o
 end
 
 function Stop:check_connection(e, entity)
+	print("Stop check connection", self.entity.unit_number, entity.name, entity.unit_number)
+
 	if entity.name == "conductor-train-stop" then
 		if self.train_stop_entity == nil then
 			self.train_stop_entity = entity
@@ -35,18 +38,20 @@ function Stop:check_connection(e, entity)
 			-- error
 		end
 	elseif entity.name == "conductor-stop-block-combinator" then
+		
+		local stop_block = get_conductor_object(e, entity, self)
+		stop_block.stop = self
 
-		stop_block = get_conductor_object(e, entity, self)
 		stop_block:reset_connections(e)
-
-		self.stop_blocks[entity.unit_number] = stock_block
+		
+		self.stop_blocks[entity.unit_number] = stop_block
 	end
 end
 
 function Stop:reset_connections(e)
 	-- a stop should be connected to a conductor-train-stop and one or more conductor-stop-block-combinator
 
-	print("stop reset connections", self, e)
+	print("stop reset connections", self.entity.unit_number)
 
 	if self.last_reset == e.tick then return end
 	self.last_reset = e.tick
@@ -100,7 +105,7 @@ function Stop:windows_empty(e)
 end
 
 function Stop:ready_to_test()
-	return self.windows_empty() and self.blocks_unlocked()
+	return self:windows_empty() and self:blocks_unlocked()
 end
 
 function Stop:lock_blocks()
@@ -116,25 +121,30 @@ function Stop:unlock_blocks()
 end
 
 function Stop:start_test()
-	print("Stop start test")
+	print("Stop:start_test", self.entity.unit_number)
 
 	self.is_testing = true
 
-	self.lock_blocks()
+	conductor.stops_testing[self.entity.unit_number] = self
 
-	self.launch()
+	self:lock_blocks()
+
+	self:launch()
 end
 
 function Stop:stop_test()
+	print("Stop:stop_test", self.entity.unit_number)
 
 	self.is_testing = false
 
-	self.unlock_blocks()
+	conductor.stops_testing[self.entity.unit_number] = nil
+
+	self:unlock_blocks()
 end
 
 function Stop:schedule(e)
 
-	print("Stop schedule")
+	print("Stop:schedule", self.entity.unit_number)
 
 	table.sort(self.windows, function(a, b) return a.t_1 < b.t_1 end)
 
@@ -172,23 +182,28 @@ end
 
 function Stop:launch()
 	x = {signal = {type = "virtual", name = "A"}, count = 1}
-	self.combinator.get_control_behavior().set_signal(1, x)
+	self.entity:get_control_behavior():set_signal(1, x)
 end
 
 function Stop:stop()
 	x = {signal = {type = "virtual", name = "A"}, count = 0}
-	self.combinator.get_control_behavior().set_signal(1, x)
+	self.entity:get_control_behavior():set_signal(1, x)
 end
 
 function Stop:check_gates(e)
+	--print("Stop:check_gates", self.entity.unit_number)
+
 	for stop_block_id, stop_block in pairs(self.stop_blocks) do
-		stop_block.block.check_gates(e)
+		stop_block.block:check_gates(e)
 	end
 end
 
 function Stop:has_data()
+	--print("Stop:has_data", self.entity.unit_number)
+
 	for stop_block_id, stop_block in pairs(self.stop_blocks) do
 		if not stop_block:has_data() then
+			--print("stop block", self.entity.unit_number, stop_block.entity.unit_number, "does not have all data")
 			return false
 		end
 	end
