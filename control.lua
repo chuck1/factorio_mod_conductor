@@ -37,14 +37,21 @@ function on_train_leave(e)
 end
 
 function on_train_changed_state(e)
-	if e.train.station.name ~= "conductor-train-stop" then return end
+	
+	
 
 	if e.train.state == defines.train_state.wait_station then
+		
+		if e.train.station.name ~= "conductor-train-stop" then return end
+		
 		on_train_arrive(e)
+		
 	elseif e.train.state == defines.train_state.on_the_path then
+		-- TODO need to	determine if departed station was a conductor station
 		if e.old_state == defines.train_state.wait_station then
 			on_train_leave(e)
 		end
+		
 	end
 end
 
