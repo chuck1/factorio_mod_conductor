@@ -1,13 +1,13 @@
 
 
 
-local conductorTrainStop = table.deepcopy(data.raw["train-stop"]["train-stop"])
-conductorTrainStop.name = "conductor-train-stop"
+--local conductorTrainStop = table.deepcopy(data.raw["train-stop"]["train-stop"])
+--conductorTrainStop.name = "conductor-train-stop"
 
-local recipe_train_stop = table.deepcopy(data.raw.recipe["train-stop"])
-recipe_train_stop.enabled = true
-recipe_train_stop.ingredients = {{"train-stop", 1}, {"processing-unit", 10}}
-recipe_train_stop.result = "conductor-train-stop"
+--local recipe_train_stop = table.deepcopy(data.raw.recipe["train-stop"])
+--recipe_train_stop.enabled = true
+--recipe_train_stop.ingredients = {{"train-stop", 1}, {"processing-unit", 10}}
+--recipe_train_stop.result = "conductor-train-stop"
 
 
 
@@ -40,7 +40,7 @@ recipe_block.ingredients = {{"constant-combinator", 1}, {"processing-unit", 5}}
 recipe_block.result = "conductor-block-combinator"
 
 
-data:extend{conductorTrainStop, recipe_train_stop}
+--data:extend{conductorTrainStop, recipe_train_stop}
 data:extend{conductorStopCombinator, recipe_stop}
 data:extend{conductorStopBlockCombinator, recipe_stop_block}
 data:extend{conductorBlockCombinator, recipe_block}
