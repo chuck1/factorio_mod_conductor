@@ -5,9 +5,9 @@ local conductorTrainStop = table.deepcopy(data.raw["train-stop"]["train-stop"])
 conductorTrainStop.name = "conductor-train-stop"
 
 local recipe_train_stop = table.deepcopy(data.raw.recipe["train-stop"])
-recipe.enabled = true
-recipe.ingredients = {{"train-stop", 1}, {"processing-unit", 10}}
-recipe.result = "conductor-train-stop"
+recipe_train_stop.enabled = true
+recipe_train_stop.ingredients = {{"train-stop", 1}, {"processing-unit", 10}}
+recipe_train_stop.result = "conductor-train-stop"
 
 
 
@@ -15,9 +15,9 @@ local conductorStopCombinator = table.deepcopy(data.raw["constant-combinator"]["
 conductorStopCombinator.name = "conductor-stop-combinator"
 
 local recipe_stop = table.deepcopy(data.raw.recipe["constant-combinator"])
-recipe.enabled = true
-recipe.ingredients = {{"constant-combinator", 1}, {"processing-unit", 5}}
-recipe.result = "conductor-stop-combinator"
+recipe_stop.enabled = true
+recipe_stop.ingredients = {{"constant-combinator", 1}, {"processing-unit", 5}}
+recipe_stop.result = "conductor-stop-combinator"
 
 
 
@@ -25,9 +25,9 @@ local conductorStopBlockCombinator = table.deepcopy(data.raw["constant-combinato
 conductorStopBlockCombinator.name = "conductor-stop-block-combinator"
 
 local recipe_stop_block = table.deepcopy(data.raw.recipe["constant-combinator"])
-recipe.enabled = true
-recipe.ingredients = {{"constant-combinator", 1}, {"processing-unit", 5}}
-recipe.result = "conductor-stop-block-combinator"
+recipe_stop_block.enabled = true
+recipe_stop_block.ingredients = {{"constant-combinator", 1}, {"processing-unit", 5}}
+recipe_stop_block.result = "conductor-stop-block-combinator"
 
 
 
@@ -35,9 +35,9 @@ local conductorBlockCombinator = table.deepcopy(data.raw["constant-combinator"][
 conductorBlockCombinator.name = "conductor-block-combinator"
 
 local recipe_block = table.deepcopy(data.raw.recipe["constant-combinator"])
-recipe.enabled = true
-recipe.ingredients = {{"constant-combinator", 1}, {"processing-unit", 5}}
-recipe.result = "conductor-block-combinator"
+recipe_block.enabled = true
+recipe_block.ingredients = {{"constant-combinator", 1}, {"processing-unit", 5}}
+recipe_block.result = "conductor-block-combinator"
 
 
 data:extend{conductorTrainStop, recipe_train_stop}
