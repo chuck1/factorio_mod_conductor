@@ -7,6 +7,7 @@ local conductorTrainStop = table.deepcopy(data.raw["train-stop"]["train-stop"])
 conductorTrainStop.name = "conductor-train-stop"
 
 local recipe_train_stop = table.deepcopy(data.raw.recipe["train-stop"])
+recipe_train_stop.name = "conductor-train-stop"
 recipe_train_stop.enabled = true
 recipe_train_stop.ingredients = {{"train-stop", 1}, {"processing-unit", 10}}
 recipe_train_stop.result = "conductor-train-stop"
