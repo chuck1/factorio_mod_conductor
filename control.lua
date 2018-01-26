@@ -28,6 +28,7 @@ function on_train_arrive(e)
 end
 
 function on_train_leave(e)
+
 	-- train has just left a conductor train stop
 	-- reset the stop
 
@@ -38,16 +39,20 @@ end
 
 function on_train_changed_state(e)
 	
-	
-
 	if e.train.state == defines.train_state.wait_station then
 		
 		if e.train.station.name ~= "conductor-train-stop" then return end
-		
+
+		e.train.last_station = e.train.station
+
 		on_train_arrive(e)
 		
 	elseif e.train.state == defines.train_state.on_the_path then
-		-- TODO need to	determine if departed station was a conductor station
+
+		if e.train.last_station == nil then return end
+
+		if e.train.last_station.name ~= "conductor-train-stop" then return end
+		
 		if e.old_state == defines.train_state.wait_station then
 			on_train_leave(e)
 		end

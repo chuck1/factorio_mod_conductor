@@ -174,17 +174,30 @@ on_built_entity({
 
 print_connections()
 
+train_1 = {
+	station = train_stop_entity_1,
+	state = defines.train_state.wait_station,
+}
+
 on_train_changed_state({
 	tick = 2,
-	train = {
-		station = train_stop_entity_1,
-		state = defines.train_state.wait_station,
-	},
+	train = train_1,
 })
+
 
 --print_state()
 
 on_tick({tick=3})
+
+-- train_1 leaves station
+
+train_1.state = defines.train_state.on_the_path
+train_1.station = nil
+
+on_train_changed_state({
+	tick = 3,
+	train = train_1,
+})
 
 on_train_changed_state({
 	tick = 3,
