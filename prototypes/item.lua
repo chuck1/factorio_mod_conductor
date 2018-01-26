@@ -12,7 +12,7 @@ recipe_train_stop.enabled = true
 recipe_train_stop.ingredients = {{"train-stop", 1}, {"processing-unit", 10}}
 recipe_train_stop.result = "conductor-train-stop"
 
-data:extend{conductorTrainStopItem, conductorTrainStop, recipe_train_stop}
+data:extend({conductorTrainStopItem, conductorTrainStop, recipe_train_stop})
 
 --[[
 
