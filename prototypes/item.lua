@@ -1,5 +1,6 @@
 
 local conductorTrainStopItem = table.deepcopy(data.raw["item"]["train-stop"])
+conductorTrainStopItem.name = "conductor-train-stop"
 conductorTrainStopItem.order = "a[train-system]-cb[train-stop]"
 
 
