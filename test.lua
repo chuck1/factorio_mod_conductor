@@ -1,4 +1,5 @@
 
+--[[
 script = {
 	on_event = function(self, event_list, func)
 	end
@@ -260,5 +261,5 @@ on_tick({tick=24})
 print_state()
 
 
-
+]]--
 
