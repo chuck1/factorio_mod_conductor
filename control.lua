@@ -210,7 +210,7 @@ end
 function on_built_entity(e)
 
 	print("on built entity", e.created_entity.name)
-	game.print("", "on built entity "..e.created_entity.name)
+	game.player.print("", "on built entity "..e.created_entity.name)
 
 	if e.created_entity.name == "green-wire" or e.created_entity.name == "red-wire" then
 	
