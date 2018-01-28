@@ -1,5 +1,5 @@
 
-function copy_prototype(entity_type, src, dst, order, ingrendients)
+function copy_prototype(entity_type, src, dst, order, ingredients)
 
 	local item = table.deepcopy(data.raw["item"][src])
 	item.name = dst
