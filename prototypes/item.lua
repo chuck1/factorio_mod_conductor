@@ -28,6 +28,7 @@ copy_prototype("train-stop", "train-stop", "conductor-train-stop", nil, {{"train
 copy_prototype("constant-combinator", "constant-combinator", "conductor-stop-combinator", nil, {{"constant-combinator", 1}, {"processing-unit", 5}})
 copy_prototype("constant-combinator", "constant-combinator", "conductor-stop-block-combinator", nil, {{"constant-combinator", 1}, {"processing-unit", 5}})
 copy_prototype("constant-combinator", "constant-combinator", "conductor-block-combinator", nil, {{"constant-combinator", 1}, {"processing-unit", 5}})
+copy_prototype("rail", "rail", "conductor-rail", nil, {{"rail", 1}, {"processing-unit", 1}})
 
 
 
