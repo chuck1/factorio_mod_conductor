@@ -19,7 +19,7 @@ function copy_prototype(entity_type, src, dst, order, ingrendients)
 	recipe.ingredients = ingredients
 	recipe.result = dst
 
-	data:extend({item, entity, recipe})
+	data:extend{item, entity, recipe}
 end
 
 --"a[train-system]-cb[train-stop]"
