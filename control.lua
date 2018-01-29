@@ -1,5 +1,6 @@
 
 require "lib"
+require "testing"
 
 conductor = {
 	-- referenced by train stop unit number
@@ -211,6 +212,11 @@ function on_built_entity(e)
 
 	print("on built entity", e.created_entity.name)
 	game.print{"", "on built entity "..e.created_entity.name}
+
+		
+	if e.created_entity.name == "train-stop" then
+		train_stop_find_rail(e.created_entity)
+	end
 
 	if e.created_entity.name == "green-wire" or e.created_entity.name == "red-wire" then
 	
