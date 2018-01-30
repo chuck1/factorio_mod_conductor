@@ -4,15 +4,19 @@ function train_stop_find_rail(train_stop)
 	
 	local p = train_stop.position
 	
-	local area = nil
+	local p_search = nil
 	
 	if train_stop.direction == defines.direction.east then
-		area = {{p.x - 1, p.y - 2}, {p.x + 1, p.y - 1}}
+		p_search = {x = p.x, y = p.y - 2}
 	else if train_stop.direction == defines.direction.west then
-		area = {{p.x - 1, p.y + 1}, {p.x + 1, p.y + 2}}
+		p_search = {x = p.x, y = p.y + 2}
+	else if train_stop.direction == defines.direction.north then
+		p_search = {x = p.x - 2, y = p.y}
+	else if train_stop.direction == defines.direction.south then
+		p_search = {x = p.x + 2, y = p.y}
 	end
 	
-	local entities = train_stop.surface.find_entities_filtered{area = area}
+	local rail = train_stop.surface.find_entity{entity = "straight-rail", position = p_search}
 
 	for i, e in pairs(entities) do
 		game.print{"", e.name .. " " .. e.position}
